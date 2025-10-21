@@ -156,16 +156,7 @@
                                    placeholder="Your phone number (optional)">
                         </div>
                         <div>
-                            <label for="budget" class="block text-sm font-medium text-gray-300 mb-2">Budget Range</label>
-                            <select id="budget" name="budget" 
-                                    class="form-input w-full px-4 py-3 rounded-lg">
-                                <option value="">Select budget range</option>
-                                <option value="under-100">Under $100</option>
-                                <option value="100-200">$100 - $200</option>
-                                <option value="200-300">$200 - $300</option>
-                                <option value="300-500">$300 - $500</option>
-                                <option value="500+">$500+</option>
-                            </select>
+                            <!-- Empty div to maintain grid layout -->
                         </div>
                     </div>
 
@@ -215,11 +206,28 @@
                         <select id="timeline" name="timeline" 
                                 class="form-input w-full px-4 py-3 rounded-lg">
                             <option value="">Select timeline</option>
-                            <option value="asap">ASAP (Rush order)</option>
-                            <option value="1-2-weeks">1-2 weeks</option>
-                            <option value="3-4-weeks">3-4 weeks</option>
-                            <option value="flexible">Flexible timeline</option>
+                            <option value="1-2-weeks">1-2 weeks (Normal timing - no additional cost)</option>
+                            <option value="asap">ASAP (Rush order + additional cost)</option>
                         </select>
+                    </div>
+
+                    <!-- Shipping Notice -->
+                    <div class="bg-gray-800 border border-teal-600 rounded-lg p-6">
+                        <h3 class="orbitron text-lg font-bold mb-4 text-teal-400">📍 Shipping Information</h3>
+                        <p class="text-gray-300 mb-4">
+                            All controllers must be shipped or delivered to our workshop location. Please confirm you understand this requirement.
+                        </p>
+                        <div class="bg-teal-900 bg-opacity-30 border border-teal-500 rounded-lg p-4 mb-4">
+                            <p class="font-bold text-teal-300">40 Ben Lomond Crest, Pakuranga, Auckland</p>
+                            <p class="text-sm text-gray-400 mt-1">⚠️ At customer's expense</p>
+                        </div>
+                        <div class="flex items-start">
+                            <input type="checkbox" id="shipping-confirm" name="shipping-confirm" required 
+                                   class="mt-1 mr-3 h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded">
+                            <label for="shipping-confirm" class="text-sm text-gray-300">
+                                I understand and agree that controllers must be shipped or delivered to 40 Ben Lomond Crest, Pakuranga, Auckland at my own expense. *
+                            </label>
+                        </div>
                     </div>
 
                     <!-- Submit Button -->
@@ -267,6 +275,25 @@
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="flex items-center mb-4 md:mb-0">
                     <img src="ctrlcraft.png" alt="CtrlCraft Logo" class="h-8 w-8 mr-3">
+                    <span class="orbitron text-lg font-bold metallic-text">CtrlCraft</span>
+                </div>
+                <div class="text-center md:text-right">
+                    <p class="text-gray-400 text-sm">
+                        © 2024 CtrlCraft. Precision Gaming, Perfected.
+                    </p>
+                    <p class="text-gray-500 text-xs mt-1">
+                        Professional controller customization services
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="main.js"></script>
+    <script src="email-handler.js"></script>
+</body>
+</html>o" class="h-8 w-8 mr-3">
                     <span class="orbitron text-lg font-bold metallic-text">CtrlCraft</span>
                 </div>
                 <div class="text-center md:text-right">

@@ -9,6 +9,9 @@ class EmailHandler {
         this.TEMPLATE_ID = 'template_a957hvd'; // Replace with your EmailJS template ID
         this.PUBLIC_KEY = 'S0zUDXqxW2Kw0getx'; // Replace with your EmailJS public key
         
+        // Image collection array
+        this.collectedImages = [];
+        
         this.init();
     }
 
@@ -18,6 +21,50 @@ class EmailHandler {
         
         // Setup form handlers
         this.setupFormHandlers();
+        this.setupImageCollection();
+    }
+
+    setupImageCollection() {
+        // Handle file uploads and store image data
+        const fileInput = document.getElementById('inspiration-upload');
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                this.handleFileUpload(e.target.files);
+            });
+        }
+    }
+
+    handleFileUpload(files) {
+        const fileList = document.getElementById('file-list');
+        if (!fileList) return;
+
+        fileList.innerHTML = '';
+        this.collectedImages = [];
+
+        if (files.length === 0) {
+            fileList.innerHTML = '<p class="text-gray-400 text-sm">No files selected</p>';
+            return;
+        }
+
+        Array.from(files).forEach((file, index) => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    // Store base64 image data
+                    this.collectedImages.push(e.target.result);
+                    
+                    // Display file in UI
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'flex items-center justify-between bg-gray-800 p-2 rounded text-sm';
+                    fileItem.innerHTML = `
+                        <span class="text-gray-300">${file.name}</span>
+                        <span class="text-teal-400 text-xs">${(file.size / 1024).toFixed(1)}KB</span>
+                    `;
+                    fileList.appendChild(fileItem);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
     }
 
     loadEmailJS() {
@@ -68,8 +115,8 @@ class EmailHandler {
             const data = Object.fromEntries(formData.entries());
             
             // Validate required fields
-            if (!data.name || !data.email || !data.message) {
-                throw new Error('Please fill in all required fields');
+            if (!data.name || !data.email || !data.message || !data['shipping-confirm']) {
+                throw new Error('Please fill in all required fields and confirm shipping requirements');
             }
             
             // Prepare email parameters
@@ -77,10 +124,13 @@ class EmailHandler {
                 to_email: 'mackenzie5688@gmail.com', // Your email address
                 from_name: data.name,
                 from_email: data.email,
+                phone: data.phone || 'Not provided',
                 service_type: data.service || 'Not specified',
-                budget: data.budget || 'Not specified',
+                controller_type: data['controller-type'] || 'Not specified',
+                timeline: data.timeline || 'Not specified',
                 message: data.message,
-                reply_to: data.email
+                reply_to: data.email,
+                images: this.collectedImages || [] // Array of image URLs if any
             };
             
             // Send email using EmailJS

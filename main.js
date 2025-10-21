@@ -60,7 +60,7 @@ class CtrlCraftApp {
         }, 1000);
     }
 
-    typewriterEffect(element, text, speed = 100) {
+    typewriterEffect(element, text, speed = 50) {
         let i = 0;
         element.textContent = '';
 
