@@ -130,7 +130,7 @@ class EmailHandler {
                 timeline: data.timeline || 'Not specified',
                 message: data.message,
                 reply_to: data.email,
-                images: this.collectedImages || [] // Array of image URLs if any
+                images: data.collectedImages || [] // Array of image URLs if any
             };
             
             // Send email using EmailJS
