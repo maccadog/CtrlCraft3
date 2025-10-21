@@ -70,6 +70,47 @@
             opacity: 1;
             transform: translateY(0);
         }
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .preview-item {
+            position: relative;
+            background: rgba(45, 45, 45, 0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+        .preview-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        .preview-item .file-info {
+            padding: 0.5rem;
+            font-size: 0.75rem;
+        }
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background: rgba(239, 68, 68, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+        }
+        .preview-item .remove-btn:hover {
+            background: rgba(239, 68, 68, 1);
+        }
     </style>
 </head>
 <body>
@@ -194,8 +235,8 @@
                                 Choose Files
                             </button>
                             <p class="text-sm text-gray-400 mt-2">Upload inspiration images or reference photos</p>
-                            <div id="file-list" class="mt-4 space-y-2">
-                                <p class="text-gray-400 text-sm">No files selected</p>
+                            <div id="image-preview" class="image-preview mt-4">
+                                <!-- Image previews will be inserted here -->
                             </div>
                         </div>
                     </div>
@@ -206,110 +247,48 @@
                         <select id="timeline" name="timeline" 
                                 class="form-input w-full px-4 py-3 rounded-lg">
                             <option value="">Select timeline</option>
-                            <option value="1-2-weeks">1-2 weeks (Normal timing - no additional cost)</option>
-                            <option value="asap">ASAP (Rush order + additional cost)</option>
+                            <option value="1-2-weeks">1-2 weeks</option>
+                            <option value="3-4-weeks">3-4 weeks</option>
+                            <option value="1-2-months">1-2 months</option>
+                            <option value="flexible">Flexible</option>
                         </select>
                     </div>
 
-                    <!-- Shipping Notice -->
-                    <div class="bg-gray-800 border border-teal-600 rounded-lg p-6">
-                        <h3 class="orbitron text-lg font-bold mb-4 text-teal-400">📍 Shipping Information</h3>
-                        <p class="text-gray-300 mb-4">
-                            All controllers must be shipped or delivered to our workshop location. Please confirm you understand this requirement.
-                        </p>
-                        <div class="bg-teal-900 bg-opacity-30 border border-teal-500 rounded-lg p-4 mb-4">
-                            <p class="font-bold text-teal-300">40 Ben Lomond Crest, Pakuranga, Auckland</p>
-                            <p class="text-sm text-gray-400 mt-1">⚠️ At customer's expense</p>
-                        </div>
-                        <div class="flex items-start">
+                    <!-- Shipping Confirmation -->
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <label class="flex items-start space-x-3">
                             <input type="checkbox" id="shipping-confirm" name="shipping-confirm" required 
-                                   class="mt-1 mr-3 h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded">
-                            <label for="shipping-confirm" class="text-sm text-gray-300">
-                                I understand and agree that controllers must be shipped or delivered to 40 Ben Lomond Crest, Pakuranga, Auckland at my own expense. *
-                            </label>
-                        </div>
+                                   class="mt-1 h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded">
+                            <span class="text-sm text-gray-300">
+                                I understand that I need to ship my controller to CtrlCraft for customization, 
+                                and shipping costs are not included in the service price. *
+                            </span>
+                        </label>
                     </div>
 
                     <!-- Submit Button -->
-                    <div class="text-center pt-6">
+                    <div class="text-center">
                         <button type="submit" 
-                                class="bg-teal-600 hover:bg-teal-700 text-white px-12 py-4 rounded-lg text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl">
+                                class="bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105">
                             Send Inquiry
                         </button>
-                        <p class="text-sm text-gray-400 mt-4">
-                            I'll respond within 24 hours with a quote and next steps
-                        </p>
                     </div>
                 </form>
             </div>
         </div>
     </section>
 
-    <!-- Contact Info -->
-    <section class="py-20 bg-gray-900">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="orbitron text-3xl font-bold mb-8 metallic-text">Other Ways to Reach Me</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="scroll-reveal">
-                    <div class="text-3xl mb-4">📧</div>
-                    <h3 class="orbitron text-lg font-bold mb-2">Email</h3>
-                    <p class="text-gray-300">mackenzie5688@gmail.com</p>
-                </div>
-                <div class="scroll-reveal">
-                    <div class="text-3xl mb-4">💬</div>
-                    <h3 class="orbitron text-lg font-bold mb-2">Response Time</h3>
-                    <p class="text-gray-300">Within 24 hours</p>
-                </div>
-                <div class="scroll-reveal">
-                    <div class="text-3xl mb-4">⏰</div>
-                    <h3 class="orbitron text-lg font-bold mb-2">Business Hours</h3>
-                    <p class="text-gray-300">Mon-Fri 9AM-6PM NZT</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
-    <footer class="bg-black py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center mb-4 md:mb-0">
-                    <img src="ctrlcraft.png" alt="CtrlCraft Logo" class="h-8 w-8 mr-3">
-                    <span class="orbitron text-lg font-bold metallic-text">CtrlCraft</span>
-                </div>
-                <div class="text-center md:text-right">
-                    <p class="text-gray-400 text-sm">
-                        © 2024 CtrlCraft. Precision Gaming, Perfected.
-                    </p>
-                    <p class="text-gray-500 text-xs mt-1">
-                        Professional controller customization services
-                    </p>
-                </div>
-            </div>
+    <footer class="bg-gray-900 border-t border-gray-800 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-gray-400">&copy; 2024 CtrlCraft. Precision Gaming, Perfected.</p>
         </div>
     </footer>
 
-    <!-- Scripts -->
-    <script src="main.js"></script>
+    <!-- Email Handler Script -->
     <script src="email-handler-fixed.js"></script>
-</body>
-</html>o" class="h-8 w-8 mr-3">
-                    <span class="orbitron text-lg font-bold metallic-text">CtrlCraft</span>
-                </div>
-                <div class="text-center md:text-right">
-                    <p class="text-gray-400 text-sm">
-                        © 2024 CtrlCraft. Precision Gaming, Perfected.
-                    </p>
-                    <p class="text-gray-500 text-xs mt-1">
-                        Professional controller customization services
-                    </p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
+    
+    <!-- Main JavaScript -->
     <script src="main.js"></script>
-    <script src="email-handler-fixed.js"></script>
 </body>
 </html>

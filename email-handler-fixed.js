@@ -1,4 +1,4 @@
-// Email Handler for CtrlCraft - Fixed Version
+// Email Handler for CtrlCraft - Enhanced Version with Image Support
 // This solution requires no server, database, or Firebase
 
 class EmailHandler {
@@ -36,14 +36,15 @@ class EmailHandler {
     }
 
     handleFileUpload(files) {
-        const fileList = document.getElementById('file-list');
-        if (!fileList) return;
+        const imagePreview = document.getElementById('image-preview');
+        if (!imagePreview) return;
 
-        fileList.innerHTML = '';
+        // Clear existing previews
+        imagePreview.innerHTML = '';
         this.collectedImages = [];
 
         if (files.length === 0) {
-            fileList.innerHTML = '<p class="text-gray-400 text-sm">No files selected</p>';
+            imagePreview.innerHTML = '<p class="text-gray-400 text-sm text-center">No files selected</p>';
             return;
         }
 
@@ -52,20 +53,36 @@ class EmailHandler {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     // Store base64 image data
-                    this.collectedImages.push(e.target.result);
+                    this.collectedImages.push({
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        data: e.target.result
+                    });
                     
-                    // Display file in UI
-                    const fileItem = document.createElement('div');
-                    fileItem.className = 'flex items-center justify-between bg-gray-800 p-2 rounded text-sm';
-                    fileItem.innerHTML = `
-                        <span class="text-gray-300">${file.name}</span>
-                        <span class="text-teal-400 text-xs">${(file.size / 1024).toFixed(1)}KB</span>
-                    `;
-                    fileList.appendChild(fileItem);
+                    // Create image preview
+                    this.createImagePreview(file, e.target.result, index);
                 };
                 reader.readAsDataURL(file);
             }
         });
+    }
+
+    createImagePreview(file, imageData, index) {
+        const imagePreview = document.getElementById('image-preview');
+        
+        const previewItem = document.createElement('div');
+        previewItem.className = 'preview-item';
+        previewItem.innerHTML = `
+            <img src="${imageData}" alt="${file.name}">
+            <div class="file-info">
+                <div class="text-white text-xs truncate">${file.name}</div>
+                <div class="text-gray-400 text-xs">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+            </div>
+            <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
+        `;
+        
+        imagePreview.appendChild(previewItem);
     }
 
     loadEmailJS() {
@@ -150,6 +167,14 @@ class EmailHandler {
                 throw new Error('Please enter a valid email address');
             }
             
+            // Prepare image data for email
+            let imageInfo = 'No images uploaded';
+            if (this.collectedImages.length > 0) {
+                imageInfo = this.collectedImages.map((img, index) => 
+                    `Image ${index + 1}: ${img.name} (${(img.size / 1024 / 1024).toFixed(2)} MB)`
+                ).join('\n');
+            }
+            
             // Prepare email parameters
             const emailParams = {
                 to_email: 'mackenzie5688@gmail.com', // Your email address
@@ -160,11 +185,14 @@ class EmailHandler {
                 controller_type: data['controller-type'] || 'Not specified',
                 timeline: data.timeline || 'Not specified',
                 message: data.message.trim(),
+                image_info: imageInfo,
+                image_count: this.collectedImages.length.toString(),
                 reply_to: data.email.trim()
             };
             
             // Debug: Log email parameters
             console.log('Email params:', emailParams);
+            console.log('Images collected:', this.collectedImages.length);
             
             // Send email using EmailJS
             const response = await emailjs.send(
@@ -186,18 +214,23 @@ class EmailHandler {
                     card.classList.remove('selected');
                 });
                 
-                // Reset file list
-                const fileList = document.getElementById('file-list');
-                if (fileList) {
-                    fileList.innerHTML = '<p class="text-gray-400 text-sm">No files selected</p>';
+                // Reset image preview
+                const imagePreview = document.getElementById('image-preview');
+                if (imagePreview) {
+                    imagePreview.innerHTML = '<p class="text-gray-400 text-sm text-center">No files selected</p>';
                 }
+                
+                // Redirect to main page after 3 seconds
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 3000);
             } else {
                 throw new Error(`Failed to send email: ${response.text || 'Unknown error'}`);
             }
             
         } catch (error) {
             console.error('Email sending error:', error);
-            this.showNotification(`Failed to send inquiry: ${error.message}`, 'error');
+            this.showNotification(error.message || 'Failed to send inquiry. Please try again.', 'error');
         } finally {
             // Reset button state
             submitBtn.disabled = false;
@@ -205,88 +238,56 @@ class EmailHandler {
         }
     }
 
-    async handleContactSubmission(form) {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        
-        try {
-            // Check if EmailJS is loaded
-            if (!this.emailjsLoaded || typeof emailjs === 'undefined') {
-                throw new Error('Email service is not ready. Please wait a moment and try again.');
-            }
-            
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Sending...';
-            
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            
-            const emailParams = {
-                to_email: 'mackenzie5688@gmail.com',
-                from_name: data.name,
-                from_email: data.email,
-                subject: data.subject || 'Contact Form Submission',
-                message: data.message,
-                reply_to: data.email
-            };
-            
-            const response = await emailjs.send(
-                this.SERVICE_ID,
-                this.TEMPLATE_ID,
-                emailParams
-            );
-            
-            if (response.status === 200 || response.text === 'OK') {
-                this.showNotification('Message sent successfully!', 'success');
-                form.reset();
-            } else {
-                throw new Error(`Failed to send email: ${response.text || 'Unknown error'}`);
-            }
-            
-        } catch (error) {
-            console.error('Email sending error:', error);
-            this.showNotification(`Failed to send message: ${error.message}`, 'error');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText;
-        }
-    }
-
     showNotification(message, type = 'info') {
-        // Remove existing notifications
-        document.querySelectorAll('.notification').forEach(n => n.remove());
-        
+        // Create notification element
         const notification = document.createElement('div');
-        notification.className = `notification fixed top-4 right-4 p-4 rounded-lg text-white z-50 max-w-sm ${
+        notification.className = `fixed top-20 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm ${
             type === 'success' ? 'bg-green-600' : 
             type === 'error' ? 'bg-red-600' : 'bg-blue-600'
-        }`;
-        notification.innerHTML = `
-            <div class="flex items-center justify-between">
-                <span class="mr-4">${message}</span>
-                <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-gray-200">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-        `;
+        } text-white`;
+        notification.textContent = message;
         
         document.body.appendChild(notification);
         
-        // Auto-remove after 5 seconds
+        // Animate in
         setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
+            notification.style.transform = 'translateX(0)';
+            notification.style.opacity = '1';
+        }, 100);
+        
+        // Remove after 5 seconds
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
         }, 5000);
     }
 }
 
-// Initialize EmailHandler when DOM is ready
+// Initialize the email handler when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    // Wait for EmailJS to potentially load
-    setTimeout(() => {
-        new EmailHandler();
-    }, 100);
+    new EmailHandler();
+});
+
+// Service card selection functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const serviceCards = document.querySelectorAll('.service-option');
+    const serviceInput = document.getElementById('selected-service');
+    
+    serviceCards.forEach(card => {
+        card.addEventListener('click', () => {
+            // Remove selection from all cards
+            serviceCards.forEach(c => c.classList.remove('selected'));
+            
+            // Add selection to clicked card
+            card.classList.add('selected');
+            
+            // Update hidden form field
+            if (serviceInput) {
+                serviceInput.value = card.dataset.service;
+            }
+        });
+    });
 });
